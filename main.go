@@ -121,13 +121,11 @@ func efficiency(data []nautilusDataPoint) func(http.ResponseWriter, *http.Reques
 			timeDifference := dataSlice[i].timestamp.Sub(dataSlice[i-1].timestamp)
 			fuel = timeDifference.Minutes() * dataSlice[i].consumption
 			distance = timeDifference.Hours() * dataSlice[i].speed
-			// mpg = ditance / 60 / fuel
+			// mpg = miles/hour * hour/minute * minute/gallon
 			mpg = append(mpg, distance/60/fuel)
 		}
 
-		averageMpg := average(mpg)
-
-		efficiencyResposne := response{averageMpg}
+		efficiencyResposne := response{average(mpg)}
 		body, err := json.Marshal(efficiencyResposne)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

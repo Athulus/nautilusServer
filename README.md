@@ -10,6 +10,7 @@ take home interview for nautilus labs
 5. `./nautilusServer <CSVFileName.csv>`
 
 ## sample requests
+start and end query parameters are expected to be in unix epoch time as shown below
 ```
 curl -X GET 'http://localhost:8080/total_distance?start=1561528800&end=1561604400'
 

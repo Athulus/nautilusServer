@@ -53,9 +53,10 @@ func totalDistance(data []nautilusDataPoint) func(http.ResponseWriter, *http.Req
 
 		//assuming here that speed is constant from one sensor reading to the next
 		distance := 0.0
+		log.Println(dataSlice)
 		for i := 1; i < len(dataSlice); i++ {
 			timeDifference := dataSlice[i].timestamp.Sub(dataSlice[i-1].timestamp).Hours()
-			distance += timeDifference * dataSlice[i].speed
+			distance += timeDifference * dataSlice[i-1].speed
 		}
 
 		distanceResposne := response{distance}
@@ -86,7 +87,7 @@ func totalFuel(data []nautilusDataPoint) func(http.ResponseWriter, *http.Request
 		fuel := 0.0
 		for i := 1; i < len(dataSlice); i++ {
 			timeDifference := dataSlice[i].timestamp.Sub(dataSlice[i-1].timestamp).Minutes()
-			fuel += timeDifference * dataSlice[i].consumption
+			fuel += timeDifference * dataSlice[i-1].consumption
 		}
 
 		fuelResposne := response{fuel}
@@ -119,8 +120,8 @@ func efficiency(data []nautilusDataPoint) func(http.ResponseWriter, *http.Reques
 		var mpg []float64
 		for i := 1; i < len(dataSlice); i++ {
 			timeDifference := dataSlice[i].timestamp.Sub(dataSlice[i-1].timestamp)
-			fuel = timeDifference.Minutes() * dataSlice[i].consumption
-			distance = timeDifference.Hours() * dataSlice[i].speed
+			fuel = timeDifference.Minutes() * dataSlice[i-1].consumption
+			distance = timeDifference.Hours() * dataSlice[i-1].speed
 			// mpg = miles/hour * hour/minute * minute/gallon
 			mpg = append(mpg, distance/60/fuel)
 		}
@@ -157,7 +158,6 @@ func getStartAndEndTime(r *http.Request) ( /*start time*/ time.Time /*end time*/
 	}
 	endTime = time.Unix(unix, 0)
 
-	log.Println(start, end)
 	return startTime, endTime, nil
 }
 
@@ -189,6 +189,8 @@ func sliceDataByTime(data []nautilusDataPoint, start time.Time, end time.Time) [
 				sub = append(sub, point)
 				break
 			}
+			sub = append(sub, point)
+
 		}
 
 	}
@@ -207,15 +209,15 @@ func readCSV(fileReader io.Reader) ([]nautilusDataPoint, error) {
 		unix, err := strconv.ParseInt(row[0], 10, 64)
 		if err != nil {
 			//it is assumed that we will never have missing timestamps
-			log.Println(err)
+			// log.Println(err)
 		}
 		speed, err := strconv.ParseFloat(row[1], 64)
 		if err != nil {
-			log.Println(err)
+			// log.Println(err)
 		}
 		cons, err := strconv.ParseFloat(row[2], 64)
 		if err != nil {
-			log.Println(err)
+			// log.Println(err)
 		}
 		var point nautilusDataPoint
 		point.timestamp = time.Unix(unix, 0)

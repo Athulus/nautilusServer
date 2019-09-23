@@ -53,7 +53,6 @@ func totalDistance(data []nautilusDataPoint) func(http.ResponseWriter, *http.Req
 
 		//assuming here that speed is constant from one sensor reading to the next
 		distance := 0.0
-		log.Println(dataSlice)
 		for i := 1; i < len(dataSlice); i++ {
 			timeDifference := dataSlice[i].timestamp.Sub(dataSlice[i-1].timestamp).Hours()
 			distance += timeDifference * dataSlice[i-1].speed

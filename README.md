@@ -3,8 +3,11 @@ take home interview for nautilus labs
 
 ## build and run
 
-1. `go build`
-2. `./nautilusServer <CSVFileName.csv>`
+1. clone  or download this repository
+2. cd into the root of the repository
+3. make sure tests pass with `go test`
+4. `go build`
+5. `./nautilusServer <CSVFileName.csv>`
 
 ## sample requests
 ```
